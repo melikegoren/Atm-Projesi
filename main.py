@@ -13,4 +13,4 @@ cursor.execute(""" INSERT INTO STUDENTS VALUES('Melike', 'Gören', 22)
 """)
 
 connect.commit()
-connect.close()
+#connect.close()
