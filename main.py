@@ -30,6 +30,7 @@ button = tk.Button(root, text="Kartınızı giriniz", height=2, width=15, comman
 button.place(relx=0.5, rely=0.5, anchor=CENTER)
 page1.pack()
 page2 = tk.Frame(width=500,height=500)
+
 pages = [page1, page2]
 
 
