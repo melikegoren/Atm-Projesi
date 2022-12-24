@@ -3,15 +3,11 @@ import tkinter as tk
 from tkinter import *
 import random as rand
 
-from Keypad import Keypad
+
 
 connect = sql.connect("ATMprojesi.db")
 print('AtmProjesi.db dosyasi olusturuldu')
 cursor = connect.cursor()
-#sqlite_select_Query = "select sqlite_version()"
-#cursor.execute(sqlite_select_Query)
-#record = cursor.fetchall()
-#print("SQLite Database Version is: ", record)
 connect.commit()
 count = 0
 
@@ -48,7 +44,7 @@ def clear(): #labeldaki girilenleri sil
 
 
 
-def delete():
+def delete(): #labeldaki bütün değerleri sil (page2)
     global result_show
     global result2_show
     #result_delete = pin_label.cget("text")
@@ -57,11 +53,11 @@ def delete():
     result_show = result_show[0: len(result_show)-1]
     result2_show = result2_show[0: len(result2_show)-1]
 
-def cancel():
+def cancel(): #page2 exit
     exit()
-#page3 = tk.Frame(width=800, height=800)
 
-customer_name2 = "dsadsad"
+
+customer_name2 = ""
 def check_pin(): #kullanıcının girdiği pini veritabanındakiler ile kontrol edip kullanıcıyı ana menüye yollayacak
 
     global page3
@@ -94,18 +90,9 @@ def check_pin(): #kullanıcının girdiği pini veritabanındakiler ile kontrol 
     random_atm = rand.randint(1, 3)
     komut_atm_getir = f"SELECT ID FROM ATM WHERE ID = '{random_atm}'"
     cursor.execute(komut_atm_getir)
+    global atm
     atm = cursor.fetchall()
-    print(atm)
-
-
-
-
-
-
-
-
-
-
+    print(atm[0][0])
 
 
 root = tk.Tk()
@@ -134,13 +121,12 @@ Button(keypad_frame, text="İptal", width=7, height=2, command=lambda: clear()).
 Button(keypad_frame, text="Sil", width=7, height=2, command=lambda: delete()).grid(row=1, column=3)
 Button(keypad_frame, text="Kapat",width=7, height=2, command=lambda: exit()).grid(row=2, column=3)
 Button(keypad_frame, text="Giriş", width=7, height=2, command=lambda: check_pin()).grid(row=3,column=3)
-#keypad_frame.anchor = BOTTOM
-#pin_label.place(relx=0.3, rely=0.2)
+
 pin_label.grid(row=0,column=0)
 keypad_frame.grid(row=2, column=0)
-#keypad_frame.place(relx=0.3, rely=0.5)
 
 page2.pack()
+###########################################################################################
 page3 = tk.Frame(root,width=500, height=1000,background="grey")
 text_hosgeldiniz = "HOŞGELDİNİZ"
 label_hosgeldiniz = tk.Label(page3, width=30, height=3, background="grey", text=text_hosgeldiniz, font="bold")
@@ -153,9 +139,6 @@ button_transfer = tk.Button(page3, width=10, height=2, background="white", text=
 button_transfer.grid(row=3, column=0, padx=50, pady=4)
 button_balance_inquiry = tk.Button(page3, width=10, height=2, background="white", text="Kalan Bakiye",highlightthickness=3, highlightbackground="blue")
 button_balance_inquiry.grid(row=4,column=0, padx=50, pady=5)
-
-
-
 
 page3.pack()
 
