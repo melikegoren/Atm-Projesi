@@ -1,4 +1,6 @@
 class ATM:
+
+
     def __init__(self, id, location):
         self.__atm_id = id
         self.__location = location

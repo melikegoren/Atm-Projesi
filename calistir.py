@@ -4,12 +4,14 @@ from tkinter import *
 import random as rand
 
 
-
+from Siniflar import Account
 connect = sql.connect("ATMprojesi.db")
 print('AtmProjesi.db dosyasi olusturuldu')
 cursor = connect.cursor()
-connect.commit()
+#connect.commit()
 count = 0
+
+
 
 def move_to_next_page():  #frame değiştirme fonksiyonu
     global count
@@ -57,7 +59,13 @@ def cancel(): #page2 exit
     exit()
 
 
-customer_name2 = ""
+def get_pin():
+    password = invisible_pin_label.cget("text")
+    komut_pin = "SELECT PIN FROM CARD"
+    cursor.execute(komut_pin)
+    pins = cursor.fetchall()
+    customer_pin = pins[0]
+    return str(customer_pin[0])
 def check_pin(): #kullanıcının girdiği pini veritabanındakiler ile kontrol edip kullanıcıyı ana menüye yollayacak
 
     global page3
@@ -66,17 +74,22 @@ def check_pin(): #kullanıcının girdiği pini veritabanındakiler ile kontrol 
     komut_pin = "SELECT PIN FROM CARD"
     cursor.execute(komut_pin)
     pins = cursor.fetchall()
-    global customer_password
+    global customer_pin
+    customer_pin = pins[0]
+    print(customer_pin)
 
 
 
     print((pins[0]))
     print(password)
 
+
     for i in range(0,len(pins)):
         for j in range(i, len(pins)):
             if(pins[i][j] == password):
                 check = True
+                invisible_pin_label_page3 = tk.Label(page3, width=10, height=1, background="red",text=password)
+
                 return  move_to_next_page()
 
 
@@ -93,6 +106,28 @@ def check_pin(): #kullanıcının girdiği pini veritabanındakiler ile kontrol 
     global atm
     atm = cursor.fetchall()
     print(atm[0][0])
+
+def page_kalan_bakiye():
+
+    page4 = tk.Tk()
+    page4.geometry("500x500")
+    text_kalan_bakiye = f"Kalan bakiyeniz: {customer_account.get_total_balance()} "
+    label_kalan_bakiye = tk.Label(page4, width=20, height=3, background="red", text=text_kalan_bakiye).grid(row=0, column=3, padx=180, pady=100)
+    label_kalan_bakiye.grid(row=4, column=1, padx=50, pady=30)
+
+    page3.pack_forget()
+
+    #button_geri_gel = tk.Button(page4, text="Geri Dön", width=10,height=2).place(anchor=CENTER)
+
+
+def page_para_cekme():
+    page5 = tk.Tk()
+    page5.geometry("500x500")
+
+
+
+
+
 
 
 root = tk.Tk()
@@ -120,10 +155,17 @@ Button(keypad_frame, text="0", width=5, height=2, command=lambda: show("*","0"))
 Button(keypad_frame, text="İptal", width=7, height=2, command=lambda: clear()).grid(row=0, column=3)
 Button(keypad_frame, text="Sil", width=7, height=2, command=lambda: delete()).grid(row=1, column=3)
 Button(keypad_frame, text="Kapat",width=7, height=2, command=lambda: exit()).grid(row=2, column=3)
-Button(keypad_frame, text="Giriş", width=7, height=2, command=lambda: check_pin()).grid(row=3,column=3)
+
+Button(keypad_frame, text="Giriş", width=7, height=2, command=lambda: [check_pin(), get_pin()]).grid(row=3,column=3)
+
 
 pin_label.grid(row=0,column=0)
 keypad_frame.grid(row=2, column=0)
+
+
+
+
+
 
 page2.pack()
 ###########################################################################################
@@ -137,26 +179,24 @@ button_withdraw = tk.Button(page3, width=10, height=2, background="white", text=
 button_withdraw.grid(row=2, column=0, padx=50, pady=3)
 button_transfer = tk.Button(page3, width=10, height=2, background="white", text="Para Transferi",highlightthickness=3, highlightbackground="blue")
 button_transfer.grid(row=3, column=0, padx=50, pady=4)
-button_balance_inquiry = tk.Button(page3, width=10, height=2, background="white", text="Kalan Bakiye",highlightthickness=3, highlightbackground="blue")
+button_balance_inquiry = tk.Button(page3, width=10, height=2, background="white", text="Kalan Bakiye", command=lambda: page_kalan_bakiye(),highlightthickness=3, highlightbackground="blue")
 button_balance_inquiry.grid(row=4,column=0, padx=50, pady=5)
 
+pin_code = get_pin()
+print(f"pin code: {pin_code} ")
+komut_account_getir = f"SELECT ACCOUNT_NUMBER FROM ACCOUNT WHERE ID = (SELECT ACCOUNT FROM CUSTOMER WHERE ID = (SELECT CUSTOMER_ID FROM CARD WHERE PIN = '{str(get_pin())}')) "
+cursor.execute(komut_account_getir)
+account = cursor.fetchall()
+account_number = account[0]
+print(account_number)
+customer_account = Account((account_number[0]))
+print(customer_account.get_account_id())
+
+
+
+
 page3.pack()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###############################################################
 
 pages = [page1, page2, page3]
 
